@@ -1,0 +1,21 @@
+[package]
+name = "mushi_stake_vault"
+version = "0.1.0"
+description = "Mushi stake vault program for Solana"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "mushi_stake_vault"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { version="0.28.0", features = ["init-if-needed"] }
+anchor-spl = "0.28.0"
+ahash = "=0.8.6"
