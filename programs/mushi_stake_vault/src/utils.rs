@@ -2,14 +2,10 @@ use crate::state::MainState;
 
 use anchor_lang::{
     prelude::*,
-    solana_program::{
-        program::{invoke, invoke_signed},
-        system_instruction::transfer,
-    },
 };
 use anchor_spl::{
-    token::{self, Burn, MintTo, Token, TokenAccount, Transfer},
-    token_2022::{self, transfer_checked, TransferChecked},
+    token::{self, Burn, MintTo, Transfer},
+    token_2022::{self, TransferChecked},
 };
 
 pub fn mint_to_tokens_by_main_state<'info>(
@@ -58,32 +54,74 @@ pub fn burn_tokens<'info>(
     }
 }
 
-pub fn transfer_tokens<'info>(
-    from: AccountInfo<'info>,
-    to: AccountInfo<'info>,
-    authority: AccountInfo<'info>,
-    token_program: AccountInfo<'info>,
-    amount: u64,
+#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
+pub struct TransferTokenInput<'info> {
+    pub from: AccountInfo<'info>,
+    pub to: AccountInfo<'info>,
+    pub authority: AccountInfo<'info>,
+    pub token_program: AccountInfo<'info>,
+    pub amount: u64,
+}
+
+pub fn transfer_tokens(
+    input: TransferTokenInput<'_>,
     signer_seeds: Option<&[&[&[u8]]]>,
 ) -> Result<()> {
     let token_transfer_accounts = Transfer {
-        from,
-        to,
-        authority,
+        from: input.from,
+        to: input.to,
+        authority: input.authority,
     };
     if let Some(signer_seeds) = signer_seeds {
         token::transfer(
             CpiContext::new_with_signer(
-                token_program.clone(),
+                input.token_program.clone(),
                 token_transfer_accounts,
                 signer_seeds,
             ),
-            amount,
+            input.amount,
         )?;
     } else {
         token::transfer(
-            CpiContext::new(token_program, token_transfer_accounts),
-            amount,
+            CpiContext::new(input.token_program.clone(), token_transfer_accounts),
+            input.amount,
+        )?;
+    }
+    Ok(())
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
+pub struct TransferToken2022Input<'info> {
+    pub from: AccountInfo<'info>,
+    pub to: AccountInfo<'info>,
+    pub authority: AccountInfo<'info>,
+    pub mint: AccountInfo<'info>,
+    pub token_program: AccountInfo<'info>,
+    pub amount: u64,
+    pub decimals: u8,
+}
+
+pub fn transfer_token_2022(
+    input: TransferToken2022Input<'_>,
+    signer_seeds: Option<&[&[&[u8]]]>,
+) -> Result<()> {
+    let token_transfer_accounts = TransferChecked {
+        from: input.from,
+        to: input.to,
+        authority: input.authority,
+        mint: input.mint,
+    };
+    if let Some(signer_seeds) = signer_seeds {
+        token_2022::transfer_checked(
+            CpiContext::new_with_signer(input.token_program.clone(), token_transfer_accounts, signer_seeds),
+            input.amount,
+            input.decimals,
+        )?;
+    } else {
+        token_2022::transfer_checked(
+            CpiContext::new(input.token_program.clone(), token_transfer_accounts),
+            input.amount,
+            input.decimals,
         )?;
     }
     Ok(())

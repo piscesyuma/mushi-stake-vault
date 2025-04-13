@@ -5,7 +5,7 @@ use {
 use anchor_lang::solana_program::program::invoke_signed;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{self, Mint, TokenAccount}, token_interface,
+    token_interface,
 };
 
 use mpl_token_metadata::{
@@ -14,7 +14,7 @@ use mpl_token_metadata::{
 };
 
 use crate::{
-    program::MushiStakeVault, state::{MainState, VAULT_SEED}, utils::{burn_tokens, mint_to_tokens_by_main_state}
+    state::{MainState, VAULT_SEED}, utils::{burn_tokens, mint_to_tokens_by_main_state}
 };
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
