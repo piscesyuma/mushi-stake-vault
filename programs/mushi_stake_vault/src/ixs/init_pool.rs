@@ -14,7 +14,7 @@ use mpl_token_metadata::{
 };
 
 use crate::{
-    state::{MainState, VAULT_SEED}, utils::{burn_tokens, mint_to_tokens_by_main_state}
+    state::{MainState, VAULT_OWNER_SEED}, utils::{burn_tokens, mint_to_tokens_by_main_state}
 };
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
@@ -32,7 +32,7 @@ pub fn init_pool(
     main_state.admin = ctx.accounts.admin.key();
     main_state.mushi_token_mint = ctx.accounts.mushi_token_mint.key();
     main_state.eclipse_token_mint = ctx.accounts.eclipse_token_mint.key();
-    main_state.staking_token_mint = ctx.accounts.stake_token_mint.key();
+    main_state.stake_token_mint = ctx.accounts.stake_token_mint.key();
     main_state.mushi_token_amount = 0;
     main_state.eclipse_token_amount = 0;
 
@@ -55,7 +55,7 @@ pub fn init_pool(
         ctx.accounts.token_vault_owner.to_account_info(),
         stake_token_program.to_account_info(),
         1_000_000_000,
-        Some(&[&[VAULT_SEED, &[*ctx.bumps.get("token_vault_owner").unwrap()]]]),
+        Some(&[&[VAULT_OWNER_SEED, &[*ctx.bumps.get("token_vault_owner").unwrap()]]]),
     )?;
 
     // set token metadata
@@ -121,7 +121,6 @@ pub struct InitializeStakePool<'info> {
     pub main_state: Account<'info, MainState>,
     #[account(
         mut,
-        mint::token_program = token_program
     )]
     pub mushi_token_mint: InterfaceAccount<'info, token_interface::Mint>,
     #[account(
@@ -152,7 +151,7 @@ pub struct InitializeStakePool<'info> {
 
     #[account(
         mut,
-        seeds = [VAULT_SEED],
+        seeds = [VAULT_OWNER_SEED],
         bump,
     )]
     pub token_vault_owner: SystemAccount<'info>,

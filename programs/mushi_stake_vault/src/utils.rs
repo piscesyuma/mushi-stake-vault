@@ -54,7 +54,6 @@ pub fn burn_tokens<'info>(
     }
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
 pub struct TransferTokenInput<'info> {
     pub from: AccountInfo<'info>,
     pub to: AccountInfo<'info>,
@@ -90,7 +89,6 @@ pub fn transfer_tokens(
     Ok(())
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
 pub struct TransferToken2022Input<'info> {
     pub from: AccountInfo<'info>,
     pub to: AccountInfo<'info>,

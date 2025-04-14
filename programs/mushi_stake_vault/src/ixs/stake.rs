@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{associated_token::AssociatedToken, token_interface};
 use crate::{
-    errors::MushiStakeVaultError, state::{MainState, VAULT_SEED}, utils::{mint_to_tokens_by_main_state, TransferTokenInput, transfer_tokens, TransferToken2022Input, transfer_token_2022}
+    errors::MushiStakeVaultError, state::{MainState, VAULT_OWNER_SEED}, utils::{mint_to_tokens_by_main_state, TransferTokenInput, transfer_tokens, TransferToken2022Input, transfer_token_2022}
 };
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
@@ -14,8 +14,8 @@ pub fn handler(ctx: Context<Stake>, input: StakeInput) -> Result<()> {
     let mushi_token_amount = input.amount;
     let stake_token_amount = input.amount;
 
-    require!(mushi_token_amount >= ctx.accounts.user_mushi_token_ata.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
-    require!(eclipse_token_amount >= ctx.accounts.user_eclipse_token_ata.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
+    require!(mushi_token_amount <= ctx.accounts.user_mushi_token_ata.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
+    require!(eclipse_token_amount <= ctx.accounts.user_eclipse_token_ata.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
 
     transfer_tokens(
         TransferTokenInput {
@@ -118,12 +118,12 @@ pub struct Stake<'info> {
     #[account(
         mut,
         mint::token_program = token_program,
-        address = main_state.staking_token_mint,
+        address = main_state.stake_token_mint,
     )]
     pub stake_token_mint: InterfaceAccount<'info, token_interface::Mint>,
     #[account(
         mut,
-        seeds = [VAULT_SEED],
+        seeds = [VAULT_OWNER_SEED],
         bump,
     )]
     pub token_vault_owner: SystemAccount<'info>,

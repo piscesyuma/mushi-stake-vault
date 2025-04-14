@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-pub const VAULT_SEED: &'static [u8] = b"vault";
+pub const VAULT_OWNER_SEED: &'static [u8] = b"vault_owner";
 pub const VAULT_AUTH_SEED: &'static [u8] = b"vault_authority";
 pub const STAKE_ENTRY_SEED: &'static [u8] = b"stake_entry";
 
@@ -11,7 +11,7 @@ pub struct MainState {
     pub staking_token_total_supply: u64,
     pub mushi_token_mint: Pubkey,
     pub eclipse_token_mint: Pubkey,
-    pub staking_token_mint: Pubkey,
+    pub stake_token_mint: Pubkey,
 }
 
 impl MainState {

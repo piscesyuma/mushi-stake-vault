@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{associated_token::AssociatedToken, token_interface};
 use crate::{
-    errors::MushiStakeVaultError, state::{MainState, VAULT_SEED}, utils::{burn_tokens, mint_to_tokens_by_main_state, transfer_token_2022, transfer_tokens, TransferToken2022Input, TransferTokenInput}
+    errors::MushiStakeVaultError, state::{MainState, VAULT_OWNER_SEED}, utils::{burn_tokens, transfer_token_2022, transfer_tokens, TransferToken2022Input, TransferTokenInput}
 };
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
@@ -14,11 +14,11 @@ pub fn handler(ctx: Context<Unstake>, input: UnstakeInput) -> Result<()> {
     let mushi_token_amount = input.amount;
     let stake_token_amount = input.amount;
 
-    require!(mushi_token_amount >= ctx.accounts.mushi_token_vault.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
-    require!(eclipse_token_amount >= ctx.accounts.eclipse_token_vault.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
+    require!(mushi_token_amount <= ctx.accounts.mushi_token_vault.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
+    require!(eclipse_token_amount <= ctx.accounts.eclipse_token_vault.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
     
     let bump = *ctx.bumps.get("token_vault_owner").unwrap();
-    let signer_seeds: &[&[&[u8]]] = &[&[VAULT_SEED, &[bump]]];
+    let signer_seeds: &[&[&[u8]]] = &[&[VAULT_OWNER_SEED, &[bump]]];
 
     transfer_tokens(
         TransferTokenInput {
@@ -55,9 +55,9 @@ pub fn handler(ctx: Context<Unstake>, input: UnstakeInput) -> Result<()> {
 
     
     let main_state = &mut ctx.accounts.main_state;
-    main_state.mushi_token_amount += mushi_token_amount;
-    main_state.eclipse_token_amount += eclipse_token_amount;
-    main_state.staking_token_total_supply += stake_token_amount;
+    main_state.mushi_token_amount -= mushi_token_amount;
+    main_state.eclipse_token_amount -= eclipse_token_amount;
+    main_state.staking_token_total_supply -= stake_token_amount;
     Ok(())
 }
 
@@ -122,12 +122,12 @@ pub struct Unstake<'info> {
     #[account(
         mut,
         mint::token_program = token_program,
-        address = main_state.staking_token_mint,
+        address = main_state.stake_token_mint,
     )]
     pub stake_token_mint: InterfaceAccount<'info, token_interface::Mint>,
     #[account(
         mut,
-        seeds = [VAULT_SEED],
+        seeds = [VAULT_OWNER_SEED],
         bump,
     )]
     pub token_vault_owner: SystemAccount<'info>,
