@@ -19,3 +19,4 @@ default = []
 anchor-lang = { version="0.28.0", features = ["init-if-needed"] }
 anchor-spl = "0.28.0"
 ahash = "=0.8.6"
+mpl-token-metadata = "4.1.2"
