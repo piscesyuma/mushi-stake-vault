@@ -3,6 +3,8 @@ pub mod ixs;
 pub mod utils;
 pub mod errors;
 
+pub use state::*;
+pub use ixs::*;
 use {anchor_lang::prelude::*, ixs::* };
 
 declare_id!("Bne2XHWW1HaMVHp6jXmCcmX3dVrtFMoYV5n2eyrvFw46");
