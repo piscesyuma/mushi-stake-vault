@@ -3,10 +3,10 @@ pub mod ixs;
 pub mod utils;
 pub mod errors;
 
-pub use state::*;
-pub use ixs::*;
-use {anchor_lang::prelude::*, ixs::* };
-
+use anchor_lang::prelude::*;
+use ixs::{init_pool::*, stake::*, unstake::*};
+pub use ixs::stake::StakeInput;
+pub use ixs::unstake::UnstakeInput;
 declare_id!("Bne2XHWW1HaMVHp6jXmCcmX3dVrtFMoYV5n2eyrvFw46");
 
 #[program]
