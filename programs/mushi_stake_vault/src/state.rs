@@ -12,6 +12,7 @@ pub struct MainState {
     pub mushi_token_mint: Pubkey,
     pub eclipse_token_mint: Pubkey,
     pub stake_token_mint: Pubkey,
+    pub mushi_program: Pubkey,
 }
 
 impl MainState {

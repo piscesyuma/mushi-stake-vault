@@ -10,6 +10,37 @@ pub struct UnstakeInput {
 }
 
 pub fn handler(ctx: Context<Unstake>, input: UnstakeInput) -> Result<()> {
+    // Verify that this function is being called by the authorized program
+    let instructions_sysvar = ctx.accounts.instruction_sysvar.as_ref();
+    
+    // Get the current instruction index
+    let current_index = anchor_lang::solana_program::sysvar::instructions::load_current_index_checked(instructions_sysvar)?;
+    
+    // Get the current instruction and check who called us
+    let current_ix = anchor_lang::solana_program::sysvar::instructions::load_instruction_at_checked(
+        current_index as usize, 
+        instructions_sysvar
+    )?;
+    
+    // Check if the current instruction's program ID matches the mushi_program
+    if current_ix.program_id != ctx.accounts.main_state.mushi_program {
+        // Check if we were called by the mushi_program via CPI
+        if current_index == 0 {
+            // If we're the first instruction, there's no caller, so unauthorized
+            return Err(MushiStakeVaultError::UnauthorizedProgramCall.into());
+        }
+        
+        // Check the previous instruction to see if it's the authorized program
+        let prev_ix = anchor_lang::solana_program::sysvar::instructions::load_instruction_at_checked(
+            current_index as usize - 1, 
+            instructions_sysvar
+        )?;
+        
+        if prev_ix.program_id != ctx.accounts.main_state.mushi_program {
+            return Err(MushiStakeVaultError::UnauthorizedProgramCall.into());
+        }
+    }
+    
     let eclipse_token_amount = input.amount;
     let mushi_token_amount = input.amount;
     let stake_token_amount = input.amount;
@@ -71,6 +102,9 @@ pub struct Unstake<'info> {
         bump,
     )]
     pub main_state: Box<Account<'info, MainState>>,
+    /// CHECK: This is the Solana instructions sysvar
+    #[account(address = anchor_lang::solana_program::sysvar::instructions::ID)]
+    pub instruction_sysvar: AccountInfo<'info>,
     #[account(
         mut,
         associated_token::mint = mushi_token_mint,

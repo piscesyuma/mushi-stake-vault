@@ -8,4 +8,8 @@ pub enum MushiStakeVaultError {
     InsufficientEclipseTokenAmount,
     #[msg("Insufficient stake token amount")]
     InsufficientStakeTokenAmount,
+    #[msg("Unauthorized program call")]
+    UnauthorizedProgramCall,
+    #[msg("Only admin can perform this action")]
+    UnauthorizedAdminAction,
 }

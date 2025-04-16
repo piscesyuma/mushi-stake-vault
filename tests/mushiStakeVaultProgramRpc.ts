@@ -172,6 +172,7 @@ export class MushiStakeVaultProgramRpc {
     stakeTokenUri: string;
     mushiTokenMint: web3.PublicKey;
     eclipseTokenMint: web3.PublicKey;
+    mushiProgramId: web3.PublicKey;
   }): Promise<SendTxResult> {
     try {
       const {stakeTokenName, stakeTokenSymbol, stakeTokenUri, mushiTokenMint, eclipseTokenMint} = input;
@@ -219,6 +220,7 @@ export class MushiStakeVaultProgramRpc {
           stakeTokenName: stakeTokenName, 
           stakeTokenSymbol: stakeTokenSymbol,
           stakeTokenUri: stakeTokenUri,
+          mushiProgram: input.mushiProgramId,
         }).accounts({
           admin,
           mainState: this.mainState,
@@ -258,7 +260,7 @@ export class MushiStakeVaultProgramRpc {
 
     const mushiTokenVault = getAssociatedTokenAddressSync(mainStateInfo.mushiTokenMint, this.vaultOwner, true, tokenProgram);
     const eclipseTokenVault = getAssociatedTokenAddressSync(mainStateInfo.eclipseTokenMint, this.vaultOwner, true, token2022Program);
-    const stakeTokenVault = getAssociatedTokenAddressSync(mainStateInfo.stakeTokenMint, this.vaultOwner, true, tokenProgram);
+    // const stakeTokenVault = getAssociatedTokenAddressSync(mainStateInfo.stakeTokenMint, this.vaultOwner, true, tokenProgram);
 
     const userMushiTokenAta = getAssociatedTokenAddressSync(mainStateInfo.mushiTokenMint, user, true, tokenProgram);
     const userEclipseTokenAta = getAssociatedTokenAddressSync(mainStateInfo.eclipseTokenMint, user, true, token2022Program);
@@ -272,7 +274,7 @@ export class MushiStakeVaultProgramRpc {
       stakeTokenMint: mainStateInfo.stakeTokenMint,
       mushiTokenVault,
       eclipseTokenVault,
-      stakeTokenVault,
+      // stakeTokenVault,
       userMushiTokenAta,
       userEclipseTokenAta,
       userStakeTokenAta,
@@ -281,6 +283,7 @@ export class MushiStakeVaultProgramRpc {
       tokenProgram,
       token2022Program,
       systemProgram,
+      instructionSysvar: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
     };
   }
 

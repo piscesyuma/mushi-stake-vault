@@ -19,6 +19,9 @@ describe("mushi_stake_vault", () => {
     ? new web3.PublicKey(process.env.PROGRAM_ID) 
     : new web3.PublicKey("Bne2XHWW1HaMVHp6jXmCcmX3dVrtFMoYV5n2eyrvFw46");
   
+  const mushiProgramId = process.env.MUSHI_PROGRAM_ID 
+    ? new web3.PublicKey(process.env.MUSHI_PROGRAM_ID) 
+    : new web3.PublicKey("HF5x1bCgynzEnBL7ATMFYPNFjBaqfxgMASyUJL2ud6Xi");
   let connectivity = new MushiStakeVaultProgramRpc({
     rpc,
     wallet: provider.wallet,
@@ -35,6 +38,7 @@ describe("mushi_stake_vault", () => {
       stakeTokenUri: "https://mushi.xyz/stake",
       mushiTokenMint,
       eclipseTokenMint,
+      mushiProgramId,
     });
     if (!initRes.isPass) throw "failed to init mainstate";
     await sleep(15_000);
