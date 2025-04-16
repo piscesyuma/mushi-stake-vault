@@ -22,6 +22,7 @@ pub struct InitPoolInput {
     pub stake_token_name: String,
     pub stake_token_symbol: String,
     pub stake_token_uri: String,
+    pub mushi_program: Pubkey,
 }
 
 pub fn init_pool(
@@ -35,6 +36,7 @@ pub fn init_pool(
     main_state.stake_token_mint = ctx.accounts.stake_token_mint.key();
     main_state.mushi_token_amount = 0;
     main_state.eclipse_token_amount = 0;
+    main_state.mushi_program = input.mushi_program;
 
     let stake_token_vault = &mut ctx.accounts.stake_token_vault;
     let stake_token_program = &ctx.accounts.token_program;
