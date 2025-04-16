@@ -172,6 +172,7 @@ export class MushiStakeVaultProgramRpc {
     stakeTokenUri: string;
     mushiTokenMint: web3.PublicKey;
     eclipseTokenMint: web3.PublicKey;
+    mushiProgramId: web3.PublicKey;
   }): Promise<SendTxResult> {
     try {
       const {stakeTokenName, stakeTokenSymbol, stakeTokenUri, mushiTokenMint, eclipseTokenMint} = input;
@@ -219,6 +220,7 @@ export class MushiStakeVaultProgramRpc {
           stakeTokenName: stakeTokenName, 
           stakeTokenSymbol: stakeTokenSymbol,
           stakeTokenUri: stakeTokenUri,
+          mushiProgram: input.mushiProgramId,
         }).accounts({
           admin,
           mainState: this.mainState,
