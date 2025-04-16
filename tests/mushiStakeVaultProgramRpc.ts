@@ -258,7 +258,7 @@ export class MushiStakeVaultProgramRpc {
 
     const mushiTokenVault = getAssociatedTokenAddressSync(mainStateInfo.mushiTokenMint, this.vaultOwner, true, tokenProgram);
     const eclipseTokenVault = getAssociatedTokenAddressSync(mainStateInfo.eclipseTokenMint, this.vaultOwner, true, token2022Program);
-    const stakeTokenVault = getAssociatedTokenAddressSync(mainStateInfo.stakeTokenMint, this.vaultOwner, true, tokenProgram);
+    // const stakeTokenVault = getAssociatedTokenAddressSync(mainStateInfo.stakeTokenMint, this.vaultOwner, true, tokenProgram);
 
     const userMushiTokenAta = getAssociatedTokenAddressSync(mainStateInfo.mushiTokenMint, user, true, tokenProgram);
     const userEclipseTokenAta = getAssociatedTokenAddressSync(mainStateInfo.eclipseTokenMint, user, true, token2022Program);
@@ -272,7 +272,7 @@ export class MushiStakeVaultProgramRpc {
       stakeTokenMint: mainStateInfo.stakeTokenMint,
       mushiTokenVault,
       eclipseTokenVault,
-      stakeTokenVault,
+      // stakeTokenVault,
       userMushiTokenAta,
       userEclipseTokenAta,
       userStakeTokenAta,
