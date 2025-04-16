@@ -283,6 +283,7 @@ export class MushiStakeVaultProgramRpc {
       tokenProgram,
       token2022Program,
       systemProgram,
+      instructionSysvar: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
     };
   }
 
