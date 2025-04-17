@@ -3,7 +3,7 @@ pub const VAULT_OWNER_SEED: &'static [u8] = b"vault_owner";
 pub const VAULT_AUTH_SEED: &'static [u8] = b"vault_authority";
 pub const STAKE_ENTRY_SEED: &'static [u8] = b"stake_entry";
 
-pub const MUSHIPROGRAM_VAULT_SEED: &'static [u8] = b"mushi_program_vault";
+pub const MUSHIPROGRAM_VAULT_SEED: &'static [u8] = b"vault";
 
 #[account]
 pub struct MainState {
