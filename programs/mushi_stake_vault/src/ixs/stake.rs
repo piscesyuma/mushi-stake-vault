@@ -46,7 +46,6 @@ pub fn handler(ctx: Context<Stake>, input: StakeInput) -> Result<()> {
     let stake_token_amount = input.amount;
 
     require!(mushi_token_amount <= ctx.accounts.user_mushi_token_ata.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
-    require!(eclipse_token_amount <= ctx.accounts.user_eclipse_token_ata.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
 
     transfer_tokens(
         TransferTokenInput {
@@ -110,13 +109,6 @@ pub struct Stake<'info> {
         associated_token::token_program = token_program,
     )]
     pub user_mushi_token_ata: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
-    #[account(
-        mut,
-        token::mint = eclipse_token_mint,
-        token::authority = user,
-        token::token_program = token2022_program,
-    )]
-    pub user_eclipse_token_ata: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
     #[account(
         init_if_needed,
         payer = user,

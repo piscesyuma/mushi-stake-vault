@@ -46,16 +46,15 @@ pub fn handler(ctx: Context<Unstake>, input: UnstakeInput) -> Result<()> {
     let stake_token_amount = input.amount;
 
     require!(mushi_token_amount <= ctx.accounts.mushi_token_vault.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
-    require!(eclipse_token_amount <= ctx.accounts.eclipse_token_vault.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
     
-    let bump = *ctx.bumps.get("token_vault_owner").unwrap();
+    let bump = *ctx.bumps.get("staking_program_token_vault_owner").unwrap();
     let signer_seeds: &[&[&[u8]]] = &[&[VAULT_OWNER_SEED, &[bump]]];
 
     transfer_tokens(
         TransferTokenInput {
             from: ctx.accounts.mushi_token_vault.to_account_info(),
             to: ctx.accounts.user_mushi_token_ata.to_account_info(),
-            authority: ctx.accounts.token_vault_owner.to_account_info(),
+            authority: ctx.accounts.staking_program_token_vault_owner.to_account_info(),
             token_program: ctx.accounts.token_program.to_account_info(),
             amount: mushi_token_amount,
         },
@@ -64,9 +63,9 @@ pub fn handler(ctx: Context<Unstake>, input: UnstakeInput) -> Result<()> {
 
     transfer_token_2022(
         TransferToken2022Input {
-            from: ctx.accounts.eclipse_token_vault.to_account_info(),
+            from: ctx.accounts.eclipse_token_staking_program_vault.to_account_info(),
             to: ctx.accounts.eclipse_token_mushi_program_vault.to_account_info(),
-            authority: ctx.accounts.user.to_account_info(),
+            authority: ctx.accounts.staking_program_token_vault_owner.to_account_info(),
             mint: ctx.accounts.eclipse_token_mint.to_account_info(),
             token_program: ctx.accounts.token2022_program.to_account_info(),
             amount: eclipse_token_amount,
@@ -123,7 +122,7 @@ pub struct Unstake<'info> {
     #[account(
         mut,
         associated_token::mint = mushi_token_mint,
-        associated_token::authority = token_vault_owner,
+        associated_token::authority = staking_program_token_vault_owner,
         associated_token::token_program = token_program,
     )]
     pub mushi_token_vault: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
@@ -136,10 +135,10 @@ pub struct Unstake<'info> {
     #[account(
         mut,
         token::mint = eclipse_token_mint,
-        token::authority = token_vault_owner,
+        token::authority = staking_program_token_vault_owner,
         token::token_program = token2022_program,
     )]
-    pub eclipse_token_vault: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
+    pub eclipse_token_staking_program_vault: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
     #[account(
         mut,
         token::mint = eclipse_token_mint,
@@ -164,7 +163,7 @@ pub struct Unstake<'info> {
         seeds = [VAULT_OWNER_SEED],
         bump,
     )]
-    pub token_vault_owner: SystemAccount<'info>,
+    pub staking_program_token_vault_owner: SystemAccount<'info>,
     #[account(
         mut,
         seeds = [MUSHIPROGRAM_VAULT_SEED],
