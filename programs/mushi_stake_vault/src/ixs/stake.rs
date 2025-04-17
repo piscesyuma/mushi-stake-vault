@@ -46,7 +46,6 @@ pub fn handler(ctx: Context<Stake>, input: StakeInput) -> Result<()> {
     let stake_token_amount = input.amount;
 
     require!(mushi_token_amount <= ctx.accounts.user_mushi_token_ata.amount, MushiStakeVaultError::InsufficientMushiTokenAmount);
-    require!(eclipse_token_amount <= ctx.accounts.user_eclipse_token_ata.amount, MushiStakeVaultError::InsufficientEclipseTokenAmount);
 
     transfer_tokens(
         TransferTokenInput {
@@ -59,18 +58,20 @@ pub fn handler(ctx: Context<Stake>, input: StakeInput) -> Result<()> {
         None,
     )?;
 
-    transfer_token_2022(
-        TransferToken2022Input {
-            from: ctx.accounts.user_eclipse_token_ata.to_account_info(),
-            to: ctx.accounts.eclipse_token_vault.to_account_info(),
-            authority: ctx.accounts.user.to_account_info(),
-            mint: ctx.accounts.eclipse_token_mint.to_account_info(),
-            token_program: ctx.accounts.token2022_program.to_account_info(),
-            amount: eclipse_token_amount,
-            decimals: ctx.accounts.eclipse_token_mint.decimals,
-        },
-        None,
-    )?;
+    // Transfer eclipse token from user to vault
+    // transfer_token_2022(
+    //     TransferToken2022Input {
+    //         from: ctx.accounts.user_eclipse_token_ata.to_account_info(),
+    //         to: ctx.accounts.eclipse_token_vault.to_account_info(),
+    //         authority: ctx.accounts.user.to_account_info(),
+    //         mint: ctx.accounts.eclipse_token_mint.to_account_info(),
+    //         token_program: ctx.accounts.token2022_program.to_account_info(),
+    //         amount: eclipse_token_amount,
+    //         decimals: ctx.accounts.eclipse_token_mint.decimals,
+    //     },
+    //     None,
+    // )?;
+
     mint_to_tokens_by_main_state(
         ctx.accounts.stake_token_mint.to_account_info(),
         ctx.accounts.main_state.to_account_info(),
@@ -108,13 +109,6 @@ pub struct Stake<'info> {
         associated_token::token_program = token_program,
     )]
     pub user_mushi_token_ata: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
-    #[account(
-        mut,
-        token::mint = eclipse_token_mint,
-        token::authority = user,
-        token::token_program = token2022_program,
-    )]
-    pub user_eclipse_token_ata: Box<InterfaceAccount<'info, token_interface::TokenAccount>>,
     #[account(
         init_if_needed,
         payer = user,
